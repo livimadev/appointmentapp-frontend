@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,12 +36,12 @@ export class PatientEditComponent {
   ngOnInit(): void {
     this.form = new FormGroup({
       idPatient: new FormControl(),
-      dni: new FormControl(''),
-      firstName: new FormControl(''),
-      lastName: new FormControl(''),
-      phone: new FormControl(''),
-      email: new FormControl(''),
-      address: new FormControl(''),
+      dni: new FormControl('', Validators.required),
+      firstName: new FormControl('',[Validators.required, Validators.minLength(3), Validators.maxLength(70)]),
+      lastName: new FormControl('',[Validators.required, Validators.minLength(3), Validators.maxLength(70)]),
+      phone: new FormControl('', Validators.pattern['[0-9]+']),
+      email: new FormControl('', Validators.email),
+      address: new FormControl('', Validators.required),
     });
 
     this.route.params.subscribe((data) => {
@@ -100,5 +100,9 @@ export class PatientEditComponent {
     }
 
     this.router.navigate(['pages/patient']);
+  }
+
+  get f(){
+    return this.form.controls;
   }
 }
