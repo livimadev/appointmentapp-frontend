@@ -1,14 +1,14 @@
 import { Routes } from '@angular/router';
-import { PatientComponent } from './pages/patient-component/patient-component';
-import { PatientEditComponent } from './pages/patient-component/patient-edit-component/patient-edit-component';
-import { MedicComponent } from './pages/medic-component/medic-component';
+import { LoginComponent } from './login-component/login-component';
+import { LayoutComponent } from './pages/layout-component/layout-component';
 
 export const routes: Routes = [
-    { path: 'pages/patient', component: PatientComponent,
-        children: [
-            { path: 'new', component: PatientEditComponent },
-            { path: 'edit/:id', component: PatientEditComponent }
-        ]
+    { path: '', redirectTo: 'login', pathMatch: 'full'},
+    { path: 'login', component: LoginComponent },
+    {
+        path: 'pages',
+        component: LayoutComponent,
+        loadChildren: () =>
+            import('./pages/pages.routes').then((x) => x.pagesRoutes),
     },
-    { path: 'pages/medic', component: MedicComponent }
 ];
