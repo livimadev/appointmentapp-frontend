@@ -45,6 +45,7 @@ export class PatientComponent {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  totalElements: number = 0;
 
   constructor(
     private patientService: PatientService,
@@ -60,7 +61,12 @@ export class PatientComponent {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });*/
-    this.patientService.findAll().subscribe(data => this.createTable(data));
+    
+    //this.patientService.findAll().subscribe(data => this.createTable(data));
+    this.patientService.listPageable(0,5).subscribe(data => {
+      this.createTable(data.content);
+      this.totalElements = data.totalElements;
+    });
     this.patientService.getPatientChange().subscribe(data => this.createTable(data));
     this.patientService.getMessageChange().subscribe(data => 
       this._snackBar.open(data, 'INFO', { 
@@ -73,7 +79,7 @@ export class PatientComponent {
 
   createTable(data: Patient[]) {
     this.dataSource = new MatTableDataSource(data);
-    this.dataSource.paginator = this.paginator;
+    //this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
@@ -93,4 +99,12 @@ export class PatientComponent {
       this.patientService.setMessageChange('PATIENT DELETED!');
     });
   }
+
+  showMore(e: any){
+    this.patientService.listPageable(e.pageIndex, e.pageSize).subscribe(data => {
+      this.createTable(data.content)
+      this.totalElements = data.totalElements;
+    });
+  }
+
 }
