@@ -1,9 +1,16 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ServerErrorsInterceptor } from './interceptor/server-error.interceptor';
+import { environment } from '../environments/environment';
+import { JwtModule } from '@auth0/angular-jwt';
+
+export function tokenGetter(){
+  return sessionStorage.getItem(environment.TOKEN_NAME);
+}
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,6 +19,15 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     //provideHttpClient() // Agregar esta línea
     provideHttpClient(withInterceptorsFromDi()),
+    importProvidersFrom(
+      JwtModule.forRoot({
+        config: {
+          tokenGetter: tokenGetter,
+          allowedDomains: ["localhost:9090"],
+          disallowedRoutes: ["http://localhost:9090/login/forget"],
+        },
+      }),
+    ),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ServerErrorsInterceptor,
